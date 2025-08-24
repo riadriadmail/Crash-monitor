@@ -49,4 +49,4 @@ RUN useradd -m appuser && chown -R appuser:appuser /app
 USER appuser
 
 # Start your script
-CMD ["python", "crash_predictor.py"]
+CMD ["python", "crash_monitor.py"]
