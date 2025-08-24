@@ -1,11 +1,14 @@
 import time
 import logging
+import os
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
 
 # Set up logging - only to file, not console
 logging.basicConfig(
@@ -28,10 +31,15 @@ def setup_driver():
     # Add user agent to mimic real browser
     chrome_options.add_argument("--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36")
     
-    # Run in headless mode to avoid showing browser window
+    # Run in headless mode for server deployment
     chrome_options.add_argument("--headless")
     
-    driver = webdriver.Chrome(options=chrome_options)
+    # For Render.com deployment
+    chrome_options.binary_location = os.environ.get("GOOGLE_CHROME_BIN", "/usr/bin/google-chrome")
+    
+    # Set up driver
+    service = Service(executable_path=os.environ.get("CHROMEDRIVER_PATH", ChromeDriverManager().install()))
+    driver = webdriver.Chrome(service=service, options=chrome_options)
     return driver
 
 def check_for_iframes(driver):
@@ -63,7 +71,7 @@ def save_round_data(last_value):
     except Exception as e:
         logging.error(f"Error saving to file: {e}")
 
-def monitor_crash_game(url, wait_time=10):
+def monitor_crash_game(url, wait_time=60):
     """Monitor crash game and collect crash points"""
     print("Starting crash game monitor...")
     print("Navigating to game page...")
@@ -173,7 +181,7 @@ def monitor_crash_game(url, wait_time=10):
                         last_round_value = multiplier
                         previous_value = multiplier
                 
-                time.sleep(0.5)  # Check every second
+                time.sleep(1)  # Check every second
                     
             except KeyboardInterrupt:
                 print("\nStopping monitor...")
@@ -198,8 +206,8 @@ def monitor_crash_game(url, wait_time=10):
         print("WebDriver closed successfully")
 
 if __name__ == "__main__":
-    # Replace with the actual URL of the crash game
-    GAME_URL = "https://gecwlsp6ylfo.pro/en/games/crash"  # Update this URL
+    # Get URL from environment variable or use default
+    GAME_URL = os.environ.get("GAME_URL", "https://example-crash-game.com")
     
     # Create or clear the results file at start
     open("crash_results.txt", "w").close()
