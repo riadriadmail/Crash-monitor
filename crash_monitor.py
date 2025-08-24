@@ -8,7 +8,6 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager
 
 # Set up logging - only to file, not console
 logging.basicConfig(
@@ -34,11 +33,11 @@ def setup_driver():
     # Run in headless mode for server deployment
     chrome_options.add_argument("--headless")
     
-    # For Render.com deployment
-    chrome_options.binary_location = os.environ.get("GOOGLE_CHROME_BIN", "/usr/bin/google-chrome")
+    # For Render.com deployment - use the pre-installed Chrome
+    chrome_options.binary_location = "/usr/bin/google-chrome"
     
-    # Set up driver
-    service = Service(executable_path=os.environ.get("CHROMEDRIVER_PATH", ChromeDriverManager().install()))
+    # Set up driver with explicit path for ChromeDriver
+    service = Service(executable_path="/usr/local/bin/chromedriver")
     driver = webdriver.Chrome(service=service, options=chrome_options)
     return driver
 
@@ -71,7 +70,7 @@ def save_round_data(last_value):
     except Exception as e:
         logging.error(f"Error saving to file: {e}")
 
-def monitor_crash_game(url, wait_time=15):
+def monitor_crash_game(url, wait_time=10):
     """Monitor crash game and collect crash points"""
     print("Starting crash game monitor...")
     print("Navigating to game page...")
