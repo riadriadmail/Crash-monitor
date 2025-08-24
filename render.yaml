@@ -1,9 +1,10 @@
-# render.yaml
 services:
-  - type: worker
-    name: selenium-runner
-    env: docker
+  - type: web
+    name: crash-monitor
+    env: python
     plan: free
-    autoDeploy: true
-    dockerfilePath: ./Dockerfile
-    # If you need environment variables, define them in the dashboard after creation.
+    buildCommand: pip install -r requirements.txt
+    startCommand: python crash_monitor.py
+    envVars:
+      - key: GAME_URL
+        value: https://gecwlsp6ylfo.pro/en/games/crash  # Replace with your actual game URL
