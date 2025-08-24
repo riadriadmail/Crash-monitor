@@ -1,10 +1,9 @@
 services:
   - type: web
     name: crash-monitor
-    env: python
+    env: docker
     plan: free
-    buildCommand: pip install -r requirements.txt
-    startCommand: python crash_monitor.py
+    dockerfilePath: Dockerfile
     envVars:
       - key: GAME_URL
-        value: https://gecwlsp6ylfo.pro/en/games/crash  # Replace with your actual game URL
+        value: https://gecwlsp6ylfo.pro/en/games/crash
