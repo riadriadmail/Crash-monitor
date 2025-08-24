@@ -71,7 +71,7 @@ def save_round_data(last_value):
     except Exception as e:
         logging.error(f"Error saving to file: {e}")
 
-def monitor_crash_game(url, wait_time=60):
+def monitor_crash_game(url, wait_time=15):
     """Monitor crash game and collect crash points"""
     print("Starting crash game monitor...")
     print("Navigating to game page...")
@@ -181,7 +181,7 @@ def monitor_crash_game(url, wait_time=60):
                         last_round_value = multiplier
                         previous_value = multiplier
                 
-                time.sleep(1)  # Check every second
+                time.sleep(0.5)  # Check every second
                     
             except KeyboardInterrupt:
                 print("\nStopping monitor...")
@@ -207,7 +207,7 @@ def monitor_crash_game(url, wait_time=60):
 
 if __name__ == "__main__":
     # Get URL from environment variable or use default
-    GAME_URL = os.environ.get("GAME_URL", "https://example-crash-game.com")
+    GAME_URL = os.environ.get("GAME_URL", "https://gecwlsp6ylfo.pro/en/games/crash")
     
     # Create or clear the results file at start
     open("crash_results.txt", "w").close()
