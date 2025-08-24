@@ -33,11 +33,11 @@ def setup_driver():
     # Run in headless mode for server deployment
     chrome_options.add_argument("--headless")
     
-    # For Render.com deployment - use the pre-installed Chrome
+    # For Docker deployment
     chrome_options.binary_location = "/usr/bin/google-chrome"
     
     # Set up driver with explicit path for ChromeDriver
-    service = Service(executable_path="/usr/local/bin/chromedriver")
+    service = Service(executable_path="/usr/bin/chromedriver")
     driver = webdriver.Chrome(service=service, options=chrome_options)
     return driver
 
