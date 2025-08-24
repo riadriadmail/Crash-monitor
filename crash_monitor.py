@@ -7,14 +7,16 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
-from selenium.webdriver.chrome.service import Service
 
-# Set up logging - only to file, not console
+# Set up logging - use a directory with write permissions
+log_dir = "/tmp/logs"
+os.makedirs(log_dir, exist_ok=True)
+
 logging.basicConfig(
     level=logging.INFO, 
     format='%(asctime)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler("crash_monitor.log"),
+        logging.FileHandler(os.path.join(log_dir, "crash_monitor.log")),
     ]
 )
 
@@ -56,13 +58,14 @@ def check_for_iframes(driver):
 def save_round_data(last_value):
     """Save the round data to a text file"""
     try:
-        with open("crash_results.txt", "a") as file:
+        # Use /tmp directory which has write permissions
+        with open("/tmp/crash_results.txt", "a") as file:
             file.write(f"{last_value}\n")
         print(f"Saved: {last_value}")  # Only show when a value is saved
     except Exception as e:
         logging.error(f"Error saving to file: {e}")
 
-def monitor_crash_game(url, wait_time=10):
+def monitor_crash_game(url, wait_time=60):
     """Monitor crash game and collect crash points"""
     print("Starting crash game monitor...")
     print("Navigating to game page...")
@@ -120,8 +123,8 @@ def monitor_crash_game(url, wait_time=10):
                     logging.error("Could not find any game elements. Please check the page structure.")
                     print("Error: Could not find game elements. Check crash_monitor.log for details.")
                     # Take a screenshot for debugging
-                    driver.save_screenshot("page_debug.png")
-                    logging.info("Screenshot saved as 'page_debug.png' for debugging")
+                    driver.save_screenshot("/tmp/page_debug.png")
+                    logging.info("Screenshot saved as '/tmp/page_debug.png' for debugging")
                     return
         
         print("Monitoring started. Press Ctrl+C to stop.")
@@ -172,7 +175,7 @@ def monitor_crash_game(url, wait_time=10):
                         last_round_value = multiplier
                         previous_value = multiplier
                 
-                time.sleep(0.5)  # Check every second
+                time.sleep(1)  # Check every second
                     
             except KeyboardInterrupt:
                 print("\nStopping monitor...")
@@ -185,8 +188,8 @@ def monitor_crash_game(url, wait_time=10):
         logging.error(f"An error occurred: {str(e)}")
         print(f"Error: {e}. Check crash_monitor.log for details.")
         # Take screenshot on error
-        driver.save_screenshot("error_screenshot.png")
-        logging.info("Screenshot saved as 'error_screenshot.png'")
+        driver.save_screenshot("/tmp/error_screenshot.png")
+        logging.info("Screenshot saved as '/tmp/error_screenshot.png'")
     finally:
         # Save any remaining value before exiting
         if last_round_value and last_round_value != "1.00x":
@@ -198,10 +201,10 @@ def monitor_crash_game(url, wait_time=10):
 
 if __name__ == "__main__":
     # Get URL from environment variable or use default
-    GAME_URL = os.environ.get("GAME_URL", "https://gecwlsp6ylfo.pro/en/games/crash")
+    GAME_URL = os.environ.get("GAME_URL", "https://example-crash-game.com")
     
     # Create or clear the results file at start
-    open("crash_results.txt", "w").close()
+    open("/tmp/crash_results.txt", "w").close()
     
     monitor_crash_game(GAME_URL)
     print("Monitoring ended")
