@@ -26,19 +26,11 @@ def setup_driver():
     chrome_options.add_argument("--disable-gpu")
     chrome_options.add_argument("--window-size=1920,1080")
     chrome_options.add_experimental_option("excludeSwitches", ["enable-logging"])
-    
-    # Add user agent to mimic real browser
+    chrome_options.add_argument("--headless")
     chrome_options.add_argument("--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36")
     
-    # Run in headless mode for server deployment
-    chrome_options.add_argument("--headless")
-    
-    # For Docker deployment
-    chrome_options.binary_location = "/usr/bin/google-chrome"
-    
-    # Set up driver with explicit path for ChromeDriver
-    service = Service(executable_path="/usr/bin/chromedriver")
-    driver = webdriver.Chrome(service=service, options=chrome_options)
+    # For Selenium standalone image, Chrome is already available
+    driver = webdriver.Chrome(options=chrome_options)
     return driver
 
 def check_for_iframes(driver):
