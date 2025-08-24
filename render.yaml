@@ -1,0 +1,9 @@
+# render.yaml
+services:
+  - type: worker
+    name: selenium-runner
+    env: docker
+    plan: free
+    autoDeploy: true
+    dockerfilePath: ./Dockerfile
+    # If you need environment variables, define them in the dashboard after creation.
